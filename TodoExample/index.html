@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>TODO App</title>
+      <link rel="stylesheet" href="css/bootstrap.min.css">
+      <link rel="stylesheet" href="css/main.css">
+   </head>
+   <body>
+      <div id="todoList" class="container wrapper">
+         <header>
+            <h1>TODO App</h1>
+         </header>
+         <form class="form-inline new-task" data-bind="submit: addTask">
+            <div class="form-group">
+               <input type="text" class="form-control" placeholder="What to do?"  autofocus data-bind='value: newTaskTitle, valueUpdate: "afterkeydown"'>
+            </div>
+            <div class="form-group">
+               <button class="btn btn-primary" data-bind="click: addTask, enable: newTaskTitle().length > 0" >Add task</button>
+            </div>
+         </form>
+         <div class="row">
+            <div class="tasks col-lg-6">
+               <h3>Tasks</h3>
+               <div data-bind="visible: tasks().length">
+                  <!--за счет this.tasks = ko.observableArray(); этот список бутет перерендиватся каждый раз как будет изменятся колличество эллементов в массиве this.tasks = [];-->
+                  <ul data-bind="foreach: tasks">
+                     <!--внутри data-bind="foreach: tasks" мы не можем обратится к свойствам ChecklistViewModel
+                        к которым мы обращались ранее (data-bind="textInput: newTaskTitle",data-bind="click: addTask"..)
+                        но мы можем обратится к элементам объекта tasks (тоесть к элем массива)-->
+                     <li class="task checkbox">
+                        <label data-bind="click: $parent.checkTask">
+                           <input type="checkbox">
+                           <span data-bind="text: title"></span>
+                           <!--так как контекст в foreach это tasks то в нем нет метода removeTask. что бы нам привязать правильный
+                              контекст (в данном сучае это контекст родителя ChecklistViewModel вызываем
+                              removeTask такием образом $parent.removeTask)-->
+                           <a href="#" class="remove-task" data-bind="click: $parent.removeTask">(remove)</a>
+                        </label>
+                     </li>
+                  </ul>
+               </div>
+               <!--видимый если visible: true в данном случае если в массиве нету значений-->
+               <div data-bind="visible: !tasks().length">No tasks</div>
+            </div>
+            <div class="complete-task col lg-6">
+               <h3>Complete tasks</h3>
+               <div data-bind="visible: completeTasks().length">
+                  <ul data-bind="foreach: completeTasks">
+                     <li class="task">
+                        <del><span data-bind="text: title"></span></del>
+                        <a href="#" class="undo-task" data-bind="click: $parent.undoTask">(undo)</a>
+                     </li>
+                  </ul>
+               </div>
+               <div data-bind="visible: !completeTasks().length">No tasks</div>
+            </div>
+         </div>
+      </div>
+      <script src="js/knockout-3.5.1.js"></script>
+      <script src="js/main.js"></script>
+   </body>
+</html>
